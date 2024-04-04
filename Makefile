@@ -1,4 +1,4 @@
-CXX = mpicxx
+CXX = g++
 CXXFLAGS = -std=c++11 -O3 -mavx512f -march=native -fopenmp
 # NEON
 # CXXFLAGS = -std=c++11 -O3 -march=native -fopenmp
@@ -11,7 +11,7 @@ file = Laplacian27pt.cpp Smoothing.cpp OptData.cpp OptimizedData.cpp SparseMatri
 all: DBSR
 
 DBSR: Laplacian27pt.cpp
-	$(CXX) $(CXXFLAGS) -o ILU0-DBSR-27 $(file) $(INCS) $(LIBS)
+	$(CXX) $(CXXFLAGS) -o ILU0-DBSR $(file) $(INCS) $(LIBS)
 	
 clean:
-	rm -f ILU0-DBSR-27
+	rm -f ILU0-DBSR
