@@ -1,5 +1,7 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -O3 -mavx512f -march=native -fopenmp
+CXXFLAGS = -std=c++11 -O3 -march=native -fopenmp
+# AVX512
+# CXXFLAGS = -std=c++11 -O3 -mavx512f -march=native -fopenmp
 # NEON
 # CXXFLAGS = -std=c++11 -O3 -march=native -fopenmp
 
