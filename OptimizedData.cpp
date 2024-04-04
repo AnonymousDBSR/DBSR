@@ -422,6 +422,6 @@ void Laplacian27pt::OptimizeProblem(OptData & data, Vector & b, Vector & x){
 	b1.Free();
 	x1.Free();
 
-	sizePrintf(A, data);
+	// sizePrintf(A, data);
 
 }
