@@ -211,15 +211,12 @@ static void Factorization(CSRMatrix & A, OptData & data)
 	int blkNumPerColor = nb / NumColors;
 	int blksPerCore = data.BlockSize;
 
-	for (int color = 0; color < NumColors; ++color)	// 相同颜色的 BMC 块之间没有联系，可以并行计算
+	for (int color = 0; color < NumColors; ++color)	
 #pragma omp parallel for schedule(guided)
 		for(int ib = blkNumPerColor * color; ib < blkNumPerColor * (color + 1); ib += blksPerCore)
-			// 每个 BMC 块中有若干个小块，每个小块内的元素都是斜对角分布的，相互之间没有依赖，不必处理。
-			// 因此：我们可以把小块看成一个点，但对于元素不在对角线上的点（块）要另行讨论
 			for(int i = ib; i < ib + blksPerCore; i++)
 			{
 				// do B[i, i] block ILU Factorized
-				// 对角线上的小块内元素都只有对角线，不必处理
 
 				for(int k = Lp[i]; k < Lp[i + 1]; k++){
 					int kcol = Li[k];
@@ -241,19 +238,19 @@ static void Factorization(CSRMatrix & A, OptData & data)
 							if(Lo[k] + Uo[j] == Bo[kB]){
 								int kBoffset = kB * bsize;
 								int joffset = j * bsize + Lo[k];
-								for(int ii = 0; ii < bsize; ii++) // SIMD
+								for(int ii = 0; ii < bsize; ii++) // Can be changed to SIMD instruction
 									Bv[kBoffset + ii] -= Lv[koffset + ii] * Uv[joffset + ii];
 							}
 							kB++; j++;
 						}
 					}
 				}
-				for(int ii = 0, height = i * bsize, ioffset = Bd[i] * bsize; ii < bsize; ii++){ // SIMD
+				for(int ii = 0, height = i * bsize, ioffset = Bd[i] * bsize; ii < bsize; ii++){ // Can be changed to SIMD instruction
 					D[height + ii] = Bv[ioffset + ii];
 					Drcp[height + ii] = 1.0 / D[height + ii];
 				}
 				for (int j = Up[i]; j < Up[i + 1]; ++j)
-					for(int ii = 0, joffset = j * bsize, voffset = (j - Up[i] + Bd[i] + 1) * bsize; ii < bsize; ii++) // SIMD
+					for(int ii = 0, joffset = j * bsize, voffset = (j - Up[i] + Bd[i] + 1) * bsize; ii < bsize; ii++) // Can be changed to SIMD instruction
 						Uv[joffset + ii] = Bv[voffset + ii];
 			}
 					
@@ -391,7 +388,7 @@ void sizePrintf(CSRMatrix & A, OptData & data){
 void Laplacian27pt::OptimizeProblem(OptData & data, Vector & b, Vector & x){
 
 #ifdef BMC_FIX
-	BuildOptData_BMC(A, data, nx, ny, nz, 4, 4, 4, BMC_CX, BMC_CY, BMC_CZ);
+	BuildOptData_BMC(A, data, nx, ny, nz, 4, 4, 4, 2, 2, 2);
 
 #elif defined(BMC_AUTO)
 	int num_threads = VEC_LEN * omp_get_max_threads();
@@ -407,7 +404,7 @@ void Laplacian27pt::OptimizeProblem(OptData & data, Vector & b, Vector & x){
 		BuildOptData_BMC(A, data, nx, ny, nz, 4, 4, 4, cx, cy, cz);
 
 #else
-	BuildOptData_BMC(A, data, nx, ny, nz, nx/(BMC_CX*BMC_MX), ny/(BMC_CY*BMC_MY), nz/(BMC_CZ*BMC_MZ), BMC_CX, BMC_CY, BMC_CZ);
+	BuildOptData_BMC(A, data, nx, ny, nz, nx/(2*BMC_MX), ny/(2*BMC_MY), nz/(2*BMC_MZ), 2, 2, 2);
 #endif
 
 	data.Reorder_CSR(A);

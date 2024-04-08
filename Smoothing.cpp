@@ -108,17 +108,17 @@ if(alpha == -1 && beta == 1){
 	for(int i = 0; i < nb; i++){
 		int height = bsize * i;
 		double temp[bsize];
-		for(int ii = 0; ii < bsize; ii++)		// 需要更改为向量计算
+		for(int ii = 0; ii < bsize; ii++)		// Can be changed to SIMD instruction
 			temp[ii] = yv[height + ii];
 
 		for(int j = Ap[i]; j < Ap[i + 1]; j++){
             int joffset = Ai[j] * bsize + Ao[j];
             int len = j * bsize;
-			for(int k = 0, joffset = Ai[j] * bsize + Ao[j], len = j * bsize; k < bsize; k++)		// 需要更改为向量计算
+			for(int k = 0, joffset = Ai[j] * bsize + Ao[j], len = j * bsize; k < bsize; k++)		// Can be changed to SIMD instruction
 				temp[k] -= Av[len + k] * xv[joffset + k];
         }
 
-		for(int ii = 0; ii < bsize; ii++)		// 需要更改为向量计算
+		for(int ii = 0; ii < bsize; ii++)		// Can be changed to SIMD instruction
 			yv[height + ii] = temp[ii];
     }
 }
@@ -177,7 +177,7 @@ void DBSR_ILU0_Solve(CSRMatrix & A, OptData & data, const Vector & b, Vector & x
                     temp[ii] = rv[height + ii];
 
                 for(int j = Lp[i]; j < Lp[i + 1]; j++)
-                    for(int k = 0, joffset = Li[j] * bsize + Lo[j], len = j * bsize; k < bsize; k++)		// 需要更改为向量计算
+                    for(int k = 0, joffset = Li[j] * bsize + Lo[j], len = j * bsize; k < bsize; k++)		// Can be changed to SIMD instruction
                         temp[k] -= Lv[len + k] * rv[joffset + k];
 
                 for(int ii = 0; ii < bsize; ii++)
@@ -197,7 +197,7 @@ void DBSR_ILU0_Solve(CSRMatrix & A, OptData & data, const Vector & b, Vector & x
                     temp[ii] = rv[height + ii];
 
                 for(int j =  Up[i + 1] - 1; j >= Up[i]; j--)
-                    for(int k = bsize - 1, joffset = Ui[j] * bsize + Uo[j], len = j * bsize; k >= 0; k--)		// 需要更改为向量计算
+                    for(int k = bsize - 1, joffset = Ui[j] * bsize + Uo[j], len = j * bsize; k >= 0; k--)		// Can be changed to SIMD instruction
                         temp[k] -= Uv[len + k] * rv[joffset + k];
 
                 for(int ii = 0; ii < bsize; ii++){

@@ -5,13 +5,13 @@
 
 
 // struct timeval{
-// 	long tv_sec; /*秒*/
-// 	long tv_usec; /*微秒*/
+// 	long tv_sec;
+// 	long tv_usec; 
 // 	};
-// 	//timezone 结构定义为:
+// 	//timezone 
 // 	struct timezone{
-// 	int tz_minuteswest; /*和Greenwich 时间差了多少分钟*/
-// 	int tz_dsttime; /*日光节约时间的状态*/
+// 	int tz_minuteswest; 
+// 	int tz_dsttime; 
 // };
 
 
